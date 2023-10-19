@@ -60,14 +60,12 @@ def is_sentence_end(left: str, right: str,
         if ONLY_RUS_CONSONANTS_PATTERN.search(lw) and lw[-1].islower():
             return MAYBE
 
-    pse = PAIRED_SHORTENING_IN_THE_END_PATTERN.search(left)
-    if pse:
+    if pse := PAIRED_SHORTENING_IN_THE_END_PATTERN.search(left):
         s1, s2 = pse.groups()
         if (s1, s2) in paired_shortenings:
             return MAYBE
 
-    right_first_word = FIRST_WORD_PATTERN.match(right)
-    if right_first_word:
+    if right_first_word := FIRST_WORD_PATTERN.match(right):
         rw = right_first_word.group(1)
         if (lw, rw) in paired_shortenings:
             return MAYBE
@@ -75,8 +73,7 @@ def is_sentence_end(left: str, right: str,
     if ENDS_WITH_EMOTION_PATTERN.search(left) and STARTS_WITH_LOWER_PATTERN.match(right):
         return JOIN
 
-    initials = INITIALS_PATTERN.search(left)
-    if initials:
+    if initials := INITIALS_PATTERN.search(left):
         border, _ = initials.groups()
         if (border or ' ') not in "°'":
             return JOIN
@@ -84,14 +81,11 @@ def is_sentence_end(left: str, right: str,
     if lw.lower() in shortenings:
         return MAYBE
 
-    last_letter = ENDS_WITH_ONE_LETTER_LAT_AND_DOT_PATTERN.search(left)
-    if last_letter:
+    if last_letter := ENDS_WITH_ONE_LETTER_LAT_AND_DOT_PATTERN.search(left):
         border, _ = last_letter.groups()
         if (border or ' ') not in "°'":
             return MAYBE
-    if NUMERATION_PATTERN.match(left):
-        return JOIN
-    return SPLIT
+    return JOIN if NUMERATION_PATTERN.match(left) else SPLIT
 
 
 def split_by_sentences(text: str,

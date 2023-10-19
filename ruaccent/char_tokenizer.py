@@ -94,8 +94,10 @@ class CharTokenizer(PreTrainedTokenizer):
         assert os.path.isdir(save_directory)
         vocab_file = os.path.join(
             save_directory,
-            (filename_prefix + "-" if filename_prefix else "") +
-            self.vocab_files_names["vocab_file"]
+            (
+                (f"{filename_prefix}-" if filename_prefix else "")
+                + self.vocab_files_names["vocab_file"]
+            ),
         )
         index = 0
         with open(vocab_file, "w", encoding="utf-8") as writer:

@@ -45,20 +45,31 @@ class RUAccent:
             for path in self.accentuator_paths:
                 files = self.fs.ls(repo + path)
                 for file in files:
-                    hf_hub_download(repo_id=repo, local_dir_use_symlinks=False, local_dir=self.workdir, filename=file['name'].replace(repo+'/', ''))
-    
+                    hf_hub_download(
+                        repo_id=repo,
+                        local_dir_use_symlinks=False,
+                        local_dir=self.workdir,
+                        filename=file['name'].replace(f'{repo}/', ''),
+                    )
+
         if not os.path.exists(join_path(self.workdir, "nn")):
             os.mkdir(join_path(self.workdir, "nn"))
-        
+
         if not os.path.exists(join_path(self.workdir, "nn", "nn_omograph", omograph_model_size)):
-            model_path = self.omograph_models_paths.get(omograph_model_size, None)
-            if model_path:
+            if model_path := self.omograph_models_paths.get(
+                omograph_model_size, None
+            ):
                 files = self.fs.ls(repo + model_path)
                 for file in files:
-                    hf_hub_download(repo_id=repo, local_dir_use_symlinks=False, local_dir=self.workdir, filename=file['name'].replace(repo+'/', ''))
+                    hf_hub_download(
+                        repo_id=repo,
+                        local_dir_use_symlinks=False,
+                        local_dir=self.workdir,
+                        filename=file['name'].replace(f'{repo}/', ''),
+                    )
             else:
                 raise FileNotFoundError
-        
+
         self.omographs = json.load(
             open(join_path(self.workdir, "dictionary/omographs.json"), encoding='utf-8')
         )
@@ -93,15 +104,12 @@ class RUAccent:
         return sum(1 for char in text if char in vowels)
 
     def has_punctuation(self, text):
-        for char in text:
-            if char in "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~":
-                return True
-        return False
+        return any(char in "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~" for char in text)
 
     def delete_spaces_before_punc(self, text):
         punc = "!\"#$%&'()*,./:;<=>?@[\\]^_`{|}~"
         for char in punc:
-            text = text.replace(" " + char, char)
+            text = text.replace(f" {char}", char)
         return text
 
     def _process_yo(self, text):
@@ -116,8 +124,7 @@ class RUAccent:
 
         founded_omographs = []
         for i, word in enumerate(splitted_text):
-            variants = self.omographs.get(word)
-            if variants:
+            if variants := self.omographs.get(word):
                 founded_omographs.append(
                     {"word": word, "variants": variants, "position": i}
                 )
