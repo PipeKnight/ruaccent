@@ -17,13 +17,10 @@ class AccentModel:
 
     def render_stress(self, text, pred):
         text = list(text)
-        i = 0
-        for chunk in pred:
+        for i, chunk in enumerate(pred):
             if chunk != "NO":
-                text[i - 1] = "+" + text[i - 1]
-            i += 1
-        text = "".join(text)
-        return text
+                text[i - 1] = f"+{text[i - 1]}"
+        return "".join(text)
 
     def put_accent(self, word):
         inputs = self.tokenizer(word, return_tensors="np")
@@ -33,5 +30,4 @@ class AccentModel:
         logits = outputs[output_names["logits"]]
         labels = np.argmax(logits, axis=-1)[0]
         labels = [self.id2label[str(label)] for label in labels]
-        stressed_word = self.render_stress(word, labels)
-        return stressed_word
+        return self.render_stress(word, labels)
