@@ -33,12 +33,18 @@ from ruaccent import RUAccent
 
 accentizer = RUAccent()
 accentizer.load(omograph_model_size='big_poetry', use_dictionary=True)
+# выполнение `load` может занять несколько минут
 
 text = 'на двери висит замок.'
 print(accentizer.process_all(text))
+# output: н+а двер+и вис+ит зам+ок.
 
 text = 'ежик нашел в лесу ягоды.'
 print(accentizer.process_yo(text))
+# output: ёжик нашёл в лесу ягоды.
+
+print(accentizer.process_all(text))
+# output: +ёжик наш+ёл в л+есу +ягоды.
 ```
 
 ## Датасеты
